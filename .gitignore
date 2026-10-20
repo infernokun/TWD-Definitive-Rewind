@@ -1,0 +1,10 @@
+# build output and anything derived from Telltale's own files
+build/
+dist/
+backups/
+src/original/
+src/patched/
+__pycache__/
+*.log
+# ttarchext is Luigi Auriemma's tool, fetch it separately
+tools/ttarchext.exe

@@ -1,0 +1,13 @@
+{
+  "ModJsonFormatVersion": "1.0.0",
+  "ModDisplayName": "Season 2 Chapter Rewind Restored",
+  "ModVersion": "1.0.0",
+  "ModAuthor": "infernokun",
+  "ModCompatibility": "The_Walking_Dead_Definitive_Series",
+  "ModFiles": [
+    "WDC_pc_Mod_S2Rewind_data.ttarch2",
+    "_resdesc_50_Mod_S2Rewind.lua"
+  ],
+  "ModFilesGameDirectory": [],
+  "ModResourcePriority": 700
+}
