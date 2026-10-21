@@ -78,7 +78,7 @@ tools/patch_menu_chapters.py the three edits
 tools/luadis.py              disassembler used to review the diff
 tools/common.ps1             Steam library lookup shared by the scripts
 src/mod/_resdesc_50_Mod_S2Rewind.lua   resource descriptor, plain text (encrypted at build time)
-src/mod/modinfo.json         TelltaleModLauncher manifest
+src/mod/modinfo_season2_rewind.json   TelltaleModLauncher manifest
 ```
 
 `luapatch52.py` is generic. It round-trips any Definitive Series script byte for byte, so it can be reused for other script mods in this game.

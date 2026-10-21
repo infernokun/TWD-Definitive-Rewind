@@ -2,6 +2,7 @@
 
 $ModArchive = "WDC_pc_Mod_S2Rewind_data.ttarch2"
 $ModResdesc = "_resdesc_50_Mod_S2Rewind.lua"
+$ModInfo = "modinfo_season2_rewind.json"
 $GameFolderName = "The Walking Dead The Telltale Definitive Series"
 
 function Find-GameDir {

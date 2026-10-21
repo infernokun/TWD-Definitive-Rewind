@@ -55,7 +55,7 @@ if ((Get-FileHash "build\verify\$ModResdesc").Hash -ne (Get-FileHash "src\mod\$M
 Write-Host "   archive and descriptor round-trip OK"
 
 Write-Host "== 5. package"
-$ver = (Get-Content src\mod\modinfo.json | ConvertFrom-Json).ModVersion
+$ver = (Get-Content "src\mod\$ModInfo" | ConvertFrom-Json).ModVersion
 $zip = "dist\TWD-Definitive-Season2-Rewind-v$ver.zip"
-Compress-Archive -Path "dist\$ModArchive", "dist\$ModResdesc", "src\mod\modinfo.json", "install.ps1", "uninstall.ps1", "tools\common.ps1", "README.md", "LICENSE" -DestinationPath $zip
+Compress-Archive -Path "dist\$ModArchive", "dist\$ModResdesc", "src\mod\$ModInfo", "install.ps1", "uninstall.ps1", "tools\common.ps1", "README.md", "LICENSE" -DestinationPath $zip
 Get-ChildItem dist | ForEach-Object { "{0,-50} {1,10}  {2}" -f $_.Name, $_.Length, (Get-FileHash $_.FullName).Hash } | Tee-Object -FilePath dist\SHA256SUMS.txt
