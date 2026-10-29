@@ -1,8 +1,20 @@
 # Shared helpers for build.ps1 / install.ps1 / uninstall.ps1
 
-$ModArchive = "WDC_pc_Mod_S2Rewind_data.ttarch2"
-$ModResdesc = "_resdesc_50_Mod_S2Rewind.lua"
-$ModInfo = "modinfo_season2_rewind.json"
+# Season 2: patched stock Menu_chapters.lua, mounted into <MenuSeason2>
+$S2Archive = "WDC_pc_Mod_TWDRewind_S2_data.ttarch2"
+$S2Resdesc = "_resdesc_50_Mod_TWDRewind_S2.lua"
+# Seasons 3 and 4: the scripts and the rewind pictures, mounted into <Project>
+$CoreArchive = "WDC_pc_Mod_TWDRewind_data.ttarch2"
+$CoreResdesc = "_resdesc_50_Mod_TWDRewind.lua"
+# Season 4 episodes: GameOverrides.lua that runs the stock one and loads the mod, mounted into <ProjectSeason4>
+$S4GameArchive = "WDC_pc_Mod_TWDRewind_S4Game_data.ttarch2"
+$S4GameResdesc = "_resdesc_50_Mod_TWDRewind_S4Game.lua"
+$ModInfo = "modinfo_twd_rewind.json"
+$ModFiles = @($S2Archive, $S2Resdesc, $CoreArchive, $CoreResdesc, $S4GameArchive, $S4GameResdesc)
+# Files of earlier releases, removed on install so they don't linger: the Season 2-only 1.x set, and
+# the Season 4 menu set of 2.0 test builds (Season 3's More Options window for Season 4)
+$LegacyFiles = @("WDC_pc_Mod_S2Rewind_data.ttarch2", "_resdesc_50_Mod_S2Rewind.lua", "modinfo_season2_rewind.json",
+    "WDC_pc_Mod_TWDRewind_S4_data.ttarch2", "_resdesc_50_Mod_TWDRewind_S4.lua")
 $GameFolderName = "The Walking Dead The Telltale Definitive Series"
 
 function Find-GameDir {
@@ -18,7 +30,7 @@ function Find-GameDir {
         $vdf = Join-Path $r "steamapps\libraryfolders.vdf"
         if (Test-Path $vdf) {
             $m = Select-String -Path $vdf -Pattern '"path"\s+"([^"]+)"' -AllMatches
-            foreach ($x in $m.Matches) { $libs += ($x.Groups[1].Value -replace '\\', '\') }
+            foreach ($x in $m.Matches) { $libs += ($x.Groups[1].Value -replace '\\\\', '\') }
         }
     }
     foreach ($l in ($libs | Select-Object -Unique)) {

@@ -8,3 +8,5 @@ __pycache__/
 *.log
 # ttarchext is Luigi Auriemma's tool, fetch it separately
 tools/ttarchext.exe
+# luac.exe comes from the Telltale Modding Group's Script Editor repo, fetch it separately
+tools/luac.exe

@@ -1,0 +1,17 @@
+{
+  "ModJsonFormatVersion": "1.0.0",
+  "ModDisplayName": "Chapter Rewind (Seasons 2, 3 and 4)",
+  "ModVersion": "2.0.0",
+  "ModAuthor": "infernokun",
+  "ModCompatibility": "The_Walking_Dead_Definitive_Series",
+  "ModFiles": [
+    "WDC_pc_Mod_TWDRewind_S2_data.ttarch2",
+    "_resdesc_50_Mod_TWDRewind_S2.lua",
+    "WDC_pc_Mod_TWDRewind_data.ttarch2",
+    "_resdesc_50_Mod_TWDRewind.lua",
+    "WDC_pc_Mod_TWDRewind_S4Game_data.ttarch2",
+    "_resdesc_50_Mod_TWDRewind_S4Game.lua"
+  ],
+  "ModFilesGameDirectory": [],
+  "ModResourcePriority": 700
+}
