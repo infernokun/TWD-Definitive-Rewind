@@ -71,20 +71,9 @@ Use [my fork of the Telltale Mod Launcher](https://github.com/infernokun/Telltal
 3. Open the launcher, pick The Walking Dead: The Telltale Definitive Series, and drop the zip onto the window (or use Add mod).
 4. Play.
 
-### With the install script
-
-1. Download the zip from [Releases](https://github.com/infernokun/TWD-Definitive-Rewind/releases/latest) and extract it anywhere.
-2. Right-click `install.ps1` and choose Run with PowerShell. It finds the game through Steam, removes the 1.x files if present, and copies the six files into the game's `Archives` folder.
-
-If the script can't find the game, pass the path:
-
-```powershell
-.\install.ps1 -GameDir "D:\SteamLibrary\steamapps\common\The Walking Dead The Telltale Definitive Series"
-```
-
 ### By hand
 
-Copy these six files into `...\The Walking Dead The Telltale Definitive Series\Archives\`:
+Download the zip from [Releases](https://github.com/infernokun/TWD-Definitive-Rewind/releases/latest), extract it, and copy these six files into `...\The Walking Dead The Telltale Definitive Series\Archives\` (`readme.txt` in the zip has the same steps):
 
 ```
 WDC_pc_Mod_TWDRewind_S2_data.ttarch2
@@ -99,7 +88,7 @@ If you installed 1.x by hand, delete `WDC_pc_Mod_S2Rewind_data.ttarch2` and `_re
 
 ## Uninstall
 
-Remove it in the launcher, run `uninstall.ps1`, or delete the six files from the Archives folder. Steam's "verify integrity" won't remove them on its own because they are additions, not replacements. Rewind points already saved stay in the save folder as ordinary saves.
+Remove it in the launcher, or delete the six files from the Archives folder. Steam's "verify integrity" won't remove them on its own because they are additions, not replacements. Rewind points already saved stay in the save folder as ordinary saves.
 
 ## How it works
 
@@ -178,9 +167,11 @@ The build then:
 
 1. extracts the stock Season 2 `Menu_chapters.lua` from your game install (it is not in this repo) and patches it;
 2. makes the rewind pictures: Season 3's are cut out of the game's own textures (not kept in this repo), Season 4's from the scene screenshots in `src\pictures\s4`; then compiles `src\lua` and the generated picture table;
-3. packs both archives and encrypts both descriptors;
+3. packs the three archives and encrypts the three descriptors;
 4. extracts everything again to check it round-trips;
-5. writes `dist\` with checksums.
+5. writes `dist\` with checksums, and the release zip: the six mod files, `modinfo_twd_rewind.json` and `readme.txt`.
+
+To try a build, `.\install.ps1` copies the six files from `dist\` into the game (it finds the game through Steam, or pass `-GameDir`), and `.\uninstall.ps1` removes them.
 
 The Season 4 pictures were captured with a separate development tool, [tools/capture-tour](tools/capture-tour/README.md). It drives the game through every scene, screenshots each one and helps pick and crop the shots. Its README also covers what we had to learn about the engine to do that. It is not part of the mod: `build.ps1 -CaptureTour` packs it into a separately named capture build, and the normal build leaves it out. The only trace in the mod is a generic hook at the end of `TWDRewind.lua` that loads `TWDRewindAddon.lua` if an archive provides one, and the release ships none.
 
@@ -199,6 +190,8 @@ src/pictures/s4/                             Season 4 scene screenshots, one per
 tools/make_pictures.py                       builds the pictures and the picture table
 tools/capture-tour/                          development tool, not in the mod: the screenshot tour that took the Season 4 pictures (see its README)
 src/modinfo_twd_rewind.json                  Telltale Mod Launcher manifest
+src/readme.txt                               install steps shipped in the release zip
+install.ps1, uninstall.ps1                   copy a build into the game / remove it (source checkout only)
 tools/luapatch52.py                          Lua 5.2 bytecode parser and writer, exact round-trip, 4-byte floats as Telltale uses
 tools/patch_menu_chapters.py                 the three Season 2 edits
 tools/luadis.py                              disassembler used to review bytecode

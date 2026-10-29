@@ -1,21 +1,18 @@
-# Copies the six mod files into the game's Archives folder. Nothing in the game is modified.
-# Also removes the files of the Season 2-only 1.x release if they are there.
+# Copies the six mod files of a build (dist\) into the game's Archives folder, for testing a build
+# from a source checkout. Nothing in the game is modified. Also removes the files of the Season 2-only
+# 1.x release if they are there. (The release zip has no scripts: see readme.txt in it.)
 # Usage:  .\install.ps1              (finds the game through Steam)
 #         .\install.ps1 -GameDir "D:\Games\The Walking Dead The Telltale Definitive Series"
 param([string]$GameDir)
 $ErrorActionPreference = "Stop"
-# tools\common.ps1 in a source checkout, next to this script in a release zip
-$common = Join-Path $PSScriptRoot "tools\common.ps1"
-if (-not (Test-Path $common)) { $common = Join-Path $PSScriptRoot "common.ps1" }
-. $common
+. (Join-Path $PSScriptRoot "tools\common.ps1")
 
 $game = Resolve-GameDir $GameDir
 $archives = Join-Path $game "Archives"
-# Release zips have the files next to this script; a source checkout has them in dist\
-$from = if (Test-Path (Join-Path $PSScriptRoot $CoreArchive)) { $PSScriptRoot } else { Join-Path $PSScriptRoot "dist" }
+$from = Join-Path $PSScriptRoot "dist"
 
 foreach ($f in $ModFiles) {
-    if (-not (Test-Path (Join-Path $from $f))) { throw "Missing $(Join-Path $from $f). Download a release zip or run build.ps1 first." }
+    if (-not (Test-Path (Join-Path $from $f))) { throw "Missing $(Join-Path $from $f). Run build.ps1 first." }
 }
 foreach ($f in $LegacyFiles) {
     $p = Join-Path $archives $f

@@ -2,10 +2,7 @@
 # folder, restoring stock behaviour.
 param([string]$GameDir)
 $ErrorActionPreference = "Stop"
-# tools\common.ps1 in a source checkout, next to this script in a release zip
-$common = Join-Path $PSScriptRoot "tools\common.ps1"
-if (-not (Test-Path $common)) { $common = Join-Path $PSScriptRoot "common.ps1" }
-. $common
+. (Join-Path $PSScriptRoot "tools\common.ps1")
 
 $archives = Join-Path (Resolve-GameDir $GameDir) "Archives"
 foreach ($f in $ModFiles + $LegacyFiles + @($ModInfo)) {

@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.0.0 (unreleased)
+## 2.0.0 (2026-10-28)
 
 - Now covers Seasons 3 and 4 as well as Season 2, so the mod is renamed "Chapter Rewind (Seasons 2, 3 and 4)".
 - Seasons 3 and 4: the rewind list shows every scene you reached in the episode, rebuilt from the season's choice log, so it works on saves made before the mod (and finished games). Rewinding cuts the log after the last save before that scene and starts the episode there; earlier choices are kept.
@@ -17,7 +17,8 @@
 - Season 4 episodes load the mod through a third set, `Mod_TWDRewind_S4Game` (`WDC_pc_Mod_TWDRewind_S4Game_data.ttarch2` / `_resdesc_50_Mod_TWDRewind_S4Game.lua`, mounted into `<ProjectSeason4>` only). Its `GameOverrides.lua` runs the stock one (extracted from the game at build time) and then loads the mod. Retail episodes never load an optional file such as `WalkingDeadTools.lua`: `ProjectInclude.lua` requires it in tool builds only. Season 3 episodes still don't load the mod.
 - Season 4: a scene point's act number and "entered" flags are now applied in the episode, at the scene's start (`Game_StartScene`), and the jump is used up only then.
 - Season 2 is unchanged: the same patched `Menu_chapters.lua`, now in `WDC_pc_Mod_TWDRewind_S2_data.ttarch2` / `_resdesc_50_Mod_TWDRewind_S2.lua`.
-- The install script removes the 1.x files (`WDC_pc_Mod_S2Rewind_data.ttarch2`, `_resdesc_50_Mod_S2Rewind.lua`), and the launcher info file is now `modinfo_twd_rewind.json`.
+- The launcher info file is now `modinfo_twd_rewind.json`. If 1.x is installed, remove it first (or delete `WDC_pc_Mod_S2Rewind_data.ttarch2` and `_resdesc_50_Mod_S2Rewind.lua`).
+- The release zip holds only the six mod files, the launcher info file and `readme.txt` with the install steps. The install scripts, README and license stay in the repo.
 - Building now also needs `luac.exe` (Lua 5.2) from the Telltale Modding Group's Script Editor.
 
 ## 1.0.1 (2026-10-20)

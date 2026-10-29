@@ -5,7 +5,7 @@
 #      compiles src\lua\*.lua plus the generated picture table with luac (Lua 5.2, the game's bytecode format)
 #   3. packs both ttarch2 archives and encrypts both resource descriptors
 #   4. verifies everything by extracting / decrypting it again
-#   5. writes dist\ and the release zip
+#   5. writes dist\ and the release zip (the six mod files, the launcher's info file and readme.txt)
 #
 # Needs: Python 3 with Pillow and numpy; ttarchext.exe 0.3.2 or newer (https://aluigi.altervista.org/papers.htm#ttarchext);
 #        luac.exe from the Telltale Modding Group's Script Editor
@@ -52,8 +52,9 @@ function Assert-LuaHeader([string]$path) {
 }
 
 foreach ($d in "build\s2", "build\core", "build\s4game", "build\gen", "build\resdesc_in", "build\resdesc_out", "build\verify", "dist") {
-    if (Test-Path $d) { Remove-Item $d -Recurse -Force }
+    # Empty it rather than delete it: an Explorer window open on dist\ would otherwise stop the build.
     New-Item -ItemType Directory -Force $d | Out-Null
+    Get-ChildItem $d -Force | Remove-Item -Recurse -Force
 }
 New-Item -ItemType Directory -Force "build\s2\original", "build\s2\archive", "build\core\archive", "build\s4game\archive",
     "build\verify\s2", "build\verify\core", "build\verify\s4game" | Out-Null
@@ -165,6 +166,9 @@ if ($CaptureTour) {
     $modInfoPath = "build\capture\$ModInfo"
     $info | ConvertTo-Json | Set-Content -Path $modInfoPath -Encoding utf8
 }
-$files = @($ModFiles | ForEach-Object { "dist\$_" }) + @($modInfoPath, "install.ps1", "uninstall.ps1", "tools\common.ps1", "README.md", "LICENSE")
+# The release holds the mod files, the launcher's info file and readme.txt (install steps), nothing else.
+New-Item -ItemType Directory -Force build\package | Out-Null
+(Get-Content src\readme.txt -Raw).Replace("@VERSION@", $ver) | Set-Content -Path build\package\readme.txt -Encoding ascii -NoNewline
+$files = @($ModFiles | ForEach-Object { "dist\$_" }) + @($modInfoPath, "build\package\readme.txt")
 Compress-Archive -Path $files -DestinationPath $zip
 Get-ChildItem dist -File | ForEach-Object { "{0,-50} {1,10}  {2}" -f $_.Name, $_.Length, (Get-FileHash $_.FullName).Hash } | Tee-Object -FilePath dist\SHA256SUMS.txt
