@@ -33,7 +33,7 @@
 
 TWDRewind = TWDRewind or {}
 local R = TWDRewind
-R.version = "2.0.0"
+R.version = "2.1.0"
 
 local kMaxButtons = 4               -- buttons that fit inside the popup window (Back/More included)
 local kButtonPadding = 0.04         -- gap between buttons (the stock popup uses 0.1)

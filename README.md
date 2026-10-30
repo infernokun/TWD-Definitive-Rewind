@@ -8,7 +8,7 @@
 
 Rewind to an earlier point from the episode select, in the seasons that don't have it:
 
-- **Season 2** shipped in the Definitive Series with its chapter rewind switched off. This mod switches it back on, exactly as the original Season Two had it.
+- **Season 2** shipped in the Definitive Series with its chapter rewind switched off. This mod switches it back on as the original Season Two had it, and fixes the save-file copy that rewinding into another save file uses (see [Season 2's save-file copy](#season-2s-save-file-copy)).
 - **Season 3 (A New Frontier)** and **Season 4 (The Final Season)** never had rewind, and never kept the saves it needs: every checkpoint overwrites the one autosave. This mod adds a rewind menu that works on saves you already have: it lists every scene you reached in the episode, rebuilt from the season's choice log, and going back to one keeps every choice you made before it. It uses the save, log and scene code those seasons already contain.
 
 Season 1 and Michonne kept their own rewind and are not touched.
@@ -29,7 +29,7 @@ All three seasons do it from the **episode select**: main menu, pick the season,
 
 | Season | Where | What you get |
 |---|---|---|
-| 2 | Pick an episode | The chapter panels are back. Pick a chapter you've reached, then **Rewind** (or branch into another save slot). |
+| 2 | Pick an episode | The chapter panels are back. Pick a chapter you've reached, then **Rewind** and choose a save file. Your current file rewinds in place. Another file is replaced with a copy of your current one, rewound to that chapter, and your current file is left as it was. |
 | 3 | Select an episode, open **More Options** | A **Rewind** entry. It opens the rewind list (below); pick a point and confirm. |
 | 4 | Pick an episode you've played (its button says Restart), or press **Restart Episode** | The rewind list: "From the beginning" (the stock restart), then the episode's rewind points. On a controller there's also a **Rewind** hint (X / left face button). |
 
@@ -55,7 +55,8 @@ The points are numbered in that order. Each has a picture:
 - **Rewinding deletes every save after the point you pick, including later episodes.** The original games worked the same way. To keep a finished playthrough, copy your save folder first: `Documents\Telltale Games\The Walking Dead Definitive`. Files starting `wd2_` / `_wd2_` are Season 2, `wd3_` Season 3, `wd4_` Season 4.
 - Steam Cloud (and any folder sync you run on that folder) will sync the deletions too. Copy the folder somewhere outside it.
 - In Seasons 3 and 4 each rewind point is a full save (a few hundred KB), one per scene, so a season played with the mod keeps a few dozen extra files in the save folder.
-- Season 2 can branch into another save slot. Seasons 3 and 4 only rewind the current slot.
+- Seasons 3 and 4 rewind only the save file you're playing. Season 2 can also rewind into another save file. That file's old contents are replaced, and the game asks first if it isn't empty.
+- **If you used Rewind into another save file with 1.x or 2.0.0,** those two files share one choice history (see [Season 2's save-file copy](#season-2s-save-file-copy)). Keep playing only one of them and delete the other from the save menu. Copying it again with 2.1.0 gives the new copy its own history, but doesn't separate the two old files.
 - The new Season 3/4 menu text ("Rewind", "From the beginning", …) is English only.
 - If another mod ships its own `DebugLoader.lua` (Seasons 3/4), `GameOverrides.lua` (Season 4) or `Menu_chapters.lua` (Season 2), the one with the higher priority wins.
 - Tested on the Steam build dated 2020.01.29 (Season 108-RC). Other storefronts use the same archives but haven't been tried.
@@ -105,6 +106,32 @@ The Season 2 episode menu lives in `Menu_chapters.lua` inside `WDC_pc_MenuSeason
 | Button label | `navhelp_rewind` ("REWIND") | `navhelp_restart` | `navhelp_rewind` |
 
 Everything the feature depends on (the save-slot rewind code, `SaveLoad_Revert`, the menu text, the chapter thumbnails) is still in the Definitive Series, untouched. The patch is three small edits to the compiled Lua bytecode, shipped as a newer copy of that one file.
+
+A fourth edit loads `TWDRewind_S2.lua`, shipped beside it, which replaces the save-file copy (below).
+
+#### Season 2's save-file copy
+
+Rewinding into another save file copies your current file into it first (`SaveLoad_Branch`, then `SaveLoad_Copy`). In the Definitive Series that copy is broken on PC, so 1.x and 2.0.0, which restored the original flow as it was, inherited the bug.
+
+- Each save file has a choice log: `_wd2_saveslotN_id.estore` plus page files (`_wd2_saveslotN_id_Page737.epage`, ...) that hold its entries. The "My Choices" stats screen and the choice randomizer read it, and loading or rewinding cuts it back to the save you load.
+- The `.estore` stores its own name and the hashed names of its pages. The stock copy (`old_CopySlot`) copies only the `.estore` file, as is. The copy still names the original's pages, so both save files read and write the same pages.
+- Rewinding either file then cut the other's history too. Playing on in the copy could also write into the original's pages, and the original's choice stats changed with it.
+- The original Season Two runs the same copy code, and there it worked: in its save folder, a copied file's log names only its own pages. Its saves are in an older format (`5VSM`, uncompressed); the Definitive Series runs Season 2 on its newer engine (`6VSM`), where the same code copies only the one file.
+- Season 4's scripts, written for that engine, load the log before copying it (`Load(fromLog)`), and the engine then writes the copy out with pages of its own. A Season 4 copy, checked on disk, has its own pages and no link back to the original. Season 2's scripts never got that step. They also have a newer copy, `CopySaveSlot`, but only use it on PS4.
+
+`TWDRewind_S2.lua` makes the copy itself, the way Season 4's `SaveLoad_CopyGeneratedSave` rebuilds a log:
+
+1. reads the current file's log entries (`QueryEventLog`). Season 2 keeps two kinds, "Executing Dialog Node" and "Save Serial";
+2. clears the target file, including saves and an old log the stock delete can leave behind;
+3. copies the slot data and every save under the target's name, without the log;
+4. switches to the target, which gives it a new, empty log named after it, and writes the entries into it in order, with the session log paused;
+5. then runs the stock rewind in place in the copy.
+
+Every other way into the stock copy is refused with a message. The picker names files `wd2_saveslotN`, while the game creates `wd2_saveSlotN` and compares names exactly, so names are compared without case. Each copy leaves a one-line report in `prefs.prop` ("TWDRewindS2 report"), with the number of entries copied and the number the new log holds.
+
+Tested in game: slot 1 copied into slot 2 and rewound. Slot 2 got all 10,460 entries in 14 pages of its own, and its "My Choices" matched the point it was rewound to. Slot 1's log, pages and saves stayed byte-for-byte the same, also after quitting the game.
+
+**Why was rewind switched off?** Telltale never said. The likely story is that the copy broke when Season 2 moved to the Definitive Series engine, and rewind was switched off rather than fixed. In the Definitive Series the switch is a stub that always returns `false`, and the episode popup restarts in place instead, which leaves no way to reach the broken copy on PC. Nothing in the files states the reason, though.
 
 ### Seasons 3 and 4: `Mod_TWDRewind` (mounted into `<Project>`, priority 700)
 
@@ -181,6 +208,7 @@ Repository layout:
 src/lua/TWDRewind.lua                        Season 3/4 rewind points and menu (source)
 src/lua/TWDRewindScenes.lua                  generated from the games' developer scene lists (tools/gen_scene_table.py)
 src/lua/DebugLoader.lua                      loads TWDRewind.lua from the menus
+src/lua_s2/TWDRewind_S2.lua                  Season 2: the save-file copy with its own choice history (loaded by the patched Menu_chapters.lua)
 src/lua_s4game/GameOverrides.lua             loads TWDRewind.lua in Season 4 episodes, after the stock GameOverrides.lua
 src/resdesc/_resdesc_50_Mod_TWDRewind_S4Game.lua resource descriptor for the Season 4 episode set
 src/resdesc/_resdesc_50_Mod_TWDRewind.lua    resource descriptor for the Season 3/4 set (encrypted at build time)
@@ -193,7 +221,7 @@ src/modinfo_twd_rewind.json                  Telltale Mod Launcher manifest
 src/readme.txt                               install steps shipped in the release zip
 install.ps1, uninstall.ps1                   copy a build into the game / remove it (source checkout only)
 tools/luapatch52.py                          Lua 5.2 bytecode parser and writer, exact round-trip, 4-byte floats as Telltale uses
-tools/patch_menu_chapters.py                 the three Season 2 edits
+tools/patch_menu_chapters.py                 the Season 2 edits (three restore rewind, one loads TWDRewind_S2.lua)
 tools/luadis.py                              disassembler used to review bytecode
 tools/common.ps1                             file names and Steam library lookup shared by the scripts
 ```

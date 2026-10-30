@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.1.0 (2026-10-29)
+
+- Season 2: rewinding into another save file no longer mixes up two files' choices. The game's own copy on PC copies a save file's choice log without the pages that hold its entries, and the copy keeps naming the original's pages, so the two files shared one choice history: rewinding either one cut the other's choices, and playing one changed the other's "My Choices". The original Season Two runs the same code and its copy worked; it broke on the Definitive Series engine. The mod now makes the copy itself: it copies the saves and slot data, gives the new file a log of its own and writes the original's entries into it, as Season 4 rebuilds a log. The original file is left as it was.
+- Season 2: the rewind's save-file picker names files `wd2_saveslotN` while the game creates `wd2_saveSlotN`, and the game compared the two exactly, so rewinding into your current file could take the copy path. A name that only differs by case now counts as the current file.
+- Season 2: every other way into the stock copy is refused with a message.
+- If you used Rewind into another save file with 1.x or 2.0.0, those two files share one choice history: keep playing only one of them and delete the other.
+- The Season 2 copy is a new script, `TWDRewind_S2.lua`, in the Season 2 archive. The patched `Menu_chapters.lua` loads it with a fourth edit (`pcall(require, "TWDRewind_S2.lua")` at its top), since Season 2's `Menu_Main.lua` doesn't load `DebugLoader.lua`.
+
 ## 2.0.0 (2026-10-28)
 
 - Now covers Seasons 3 and 4 as well as Season 2, so the mod is renamed "Chapter Rewind (Seasons 2, 3 and 4)".

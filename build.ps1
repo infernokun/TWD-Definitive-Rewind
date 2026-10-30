@@ -64,6 +64,14 @@ Write-Host "== 1. Season 2: extract and patch Menu_chapters.lua from $stock"
 if (-not (Test-Path "build\s2\original\Menu_chapters.lua")) { throw "extraction failed" }
 python -I tools\patch_menu_chapters.py build\s2\original\Menu_chapters.lua build\s2\archive\Menu_chapters.lua
 if ($LASTEXITCODE -ne 0) { throw "patch failed" }
+# The patched script loads TWDRewind_S2.lua (the save-file copy); it ships beside it.
+Push-Location "$PSScriptRoot\src\lua_s2"
+try {
+    & $Luac -o "$PSScriptRoot\build\s2\archive\TWDRewind_S2.lua" TWDRewind_S2.lua
+    if ($LASTEXITCODE -ne 0) { throw "luac failed on TWDRewind_S2.lua" }
+    Assert-LuaHeader "$PSScriptRoot\build\s2\archive\TWDRewind_S2.lua"
+} finally { Pop-Location }
+Write-Host "   compiled TWDRewind_S2.lua"
 
 Write-Host "== 2a. Seasons 3/4: rewind pictures"
 python -I tools\make_pictures.py src\pictures.json src\lua\TWDRewindScenes.lua $Ttarchext (Join-Path $game "Archives") `
